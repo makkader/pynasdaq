@@ -8,4 +8,9 @@ setup(name='pynasdaq',
       author_email='abdul.kader880@gmail.com',
       license='MIT',
       packages=['pynasdaq'],
+      install_requires=[
+          'pandas',
+          'lxml',
+          'requests'
+      ],
       zip_safe=False)
