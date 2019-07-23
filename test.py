@@ -1,2 +1,2 @@
-import pynasdaq as pn
-print (pn.dividendCalendar());
+import pynasdaq as nas
+print (nas.dividendCalendar());
