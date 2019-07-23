@@ -4,7 +4,7 @@ Retrieve NASDAQ stock and dividend data
 
 # Usages
 
-Check usages in `usages.ipynb`
+Check usages in [https://nbviewer.jupyter.org/github/makkader/pynasdaq/blob/master/usages.ipynb]
 
 # Install
 
