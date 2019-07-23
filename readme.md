@@ -2,7 +2,8 @@
 
 Retrieve NASDAQ stock and dividend data
 
-#Usages
+# Usages
+
 -Check usages from `usages.ipynb`
 
 # Install
