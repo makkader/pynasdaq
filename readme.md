@@ -1,6 +1,6 @@
 # pynasdaq
 
-Retrieve NASDAQ stock and dividend data
+Retrieve stock and dividend data from NASDAQ.
 
 # Usages
 
@@ -8,10 +8,10 @@ Check usages in https://nbviewer.jupyter.org/github/makkader/pynasdaq/blob/maste
 
 # Install
 
-`pip install git+https://github.com/makkader/pynasdaq.git`
+- Use `pip install pynasdaq` for latest release.
 
-# Dependencies
+- use `pip install git+https://github.com/makkader/pynasdaq.git` for the latest development version.
 
-1. lxml
-2. pandas
-3. requests
+# Require
+
+- Python3
