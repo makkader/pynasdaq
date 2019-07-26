@@ -1,10 +1,23 @@
 import pandas as pd
 import requests
 from lxml import html, etree
-# from io import StringIO
+from io import StringIO
 
 
-from .common import STOCK_SUMMARY_QUOTE_URL
+from .common import STOCK_SUMMARY_QUOTE_URL, HISTORICAL_STOCK_URL
+
+
+def currentPrice(symbol):
+    response = requests.get(STOCK_SUMMARY_QUOTE_URL.format(symbol=symbol))
+    docTree = html.fromstring(response.content)
+
+    curPrice = 0
+    curPrice = float(docTree.xpath(
+        '(//div[@id="qwidget_lastsale"])[1]/text()')[0].strip()[1:])
+
+    data = {"Symbol": symbol, "CurrentPrice": curPrice}
+
+    return pd.DataFrame(data, index=[0])
 
 
 def stockSummaryQuote(symbol):
@@ -22,10 +35,13 @@ def stockSummaryQuote(symbol):
     for row in tableRows:
         cells = row.xpath('./div[@class="table-cell"]')
         key = cells[0].xpath('./b/text()')[0].strip()
+        valStr = cells[1].text.strip()
         if key == "Previous Close" or key == "Annualized Dividend" or key == "Earnings Per Share (EPS)":
             val = float(cells[1].text.strip()[1:])
         elif key == "1 Year Target" or key == "P/E Ratio" or key == "Forward P/E (1y)" or key == "Beta":
-            val = float(cells[1].text.strip())
+
+            val = 0 if valStr == "" else float(valStr)
+
         elif key == "Market Cap" or key == "Share Volume" or key == "50 Day Avg. Daily Volume":
             val = int(cells[1].text.strip().replace(",", ""))
         else:
@@ -33,4 +49,12 @@ def stockSummaryQuote(symbol):
         data[key] = val
 
     return pd.DataFrame(data, index=[0])
-    # return data
+
+
+def historicalStockQuote(symbol, timeframe="1m"):
+    payload = "{timeframe}|true".format(timeframe=timeframe)
+    headers = {'Content-Type': "application/json"}
+    url = HISTORICAL_STOCK_URL.format(symbol=symbol.lower())
+
+    response = requests.post(url, data=payload, headers=headers)
+    return pd.read_csv(StringIO(response.text), index_col=False)
