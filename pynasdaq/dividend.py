@@ -36,7 +36,7 @@ def dividendHistory(symbol):
     '''
     returns dividend history of a given symbol
     '''
-    response = requests.get(DIVIDEND_HISTORY_URL.format(symbol))
+    response = requests.get(DIVIDEND_HISTORY_URL.format(symbol=symbol))
     docTree = html.fromstring(response.content)
     table = docTree.xpath(
         '//table[@id="quotes_content_left_dividendhistoryGrid"]')
