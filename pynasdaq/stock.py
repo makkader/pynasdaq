@@ -58,3 +58,35 @@ def historicalStockQuote(symbol, timeframe="1m"):
 
     response = requests.post(url, data=payload, headers=headers)
     return pd.read_csv(StringIO(response.text), index_col=False)
+
+
+def flashQuotes(symbolList):
+
+    url = "https://www.nasdaq.com/aspx/flashquotes.aspx"
+
+    headers = {
+        'cookie': "userSymbolList="+'&'.join(symbolList)
+    }
+
+    response = requests.request(
+        "GET", url,  headers=headers)
+    # print(response.text)
+    docTree = html.fromstring(response.content)
+    table = docTree.xpath('(//div[@class="genTable"])[1]/table')[0]
+
+    head = [th.strip() for th in table.xpath(
+        ".//th//a/text()|.//th/text()") if th.strip() != ""]
+    #print(head)
+    rows = table.xpath(".//tr")
+    dic = []
+    for r in rows[1:]:
+        datarow = {}
+        for i, c in enumerate(r.xpath(".//td/a/text()|.//td/label/text()")):
+
+            datarow[head[i]] = c
+        dic.append(datarow)
+    # print(dic)
+
+    df = pd.DataFrame(dic)
+
+    return df
