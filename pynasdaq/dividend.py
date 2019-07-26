@@ -14,7 +14,7 @@ def dividendCalendar(date=""):
 
     returns: DataFrame
     '''
-    response = requests.get(DIVIDEND_CALENDAR_URL+"?date="+date)
+    response = requests.get(DIVIDEND_CALENDAR_URL, params={'date': date})
     docTree = html.fromstring(response.content)
     table = docTree.xpath('//table[@id="Table1"]')
     df = pd.read_html(etree.tostring(table[0]))

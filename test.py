@@ -1,5 +1,5 @@
 import pynasdaq as nas
-# print (nas.dividendCalendar());
+#print(nas.dividendCalendar("2019-Jul-29"))
 # print(nas.highYieldDividendStocks())
 # print(nas.dividendHistory("AAPL"))
 # print(nas.stockSummaryQuote("MSB"))
