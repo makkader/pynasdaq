@@ -5,4 +5,4 @@ import pynasdaq as nas
 # print(nas.stockSummaryQuote("MSB"))
 # print(nas.currentPrice("MSB"))
 #print(nas.historicalStockQuote("aapl", "5d"))
-print(nas.flashQuotes(["AAPL", "FB"]))
+print(nas.flashQuotes(["TSLA", "FB", "GOOG"]))

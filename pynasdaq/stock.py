@@ -4,7 +4,7 @@ from lxml import html, etree
 from io import StringIO
 
 
-from .common import STOCK_SUMMARY_QUOTE_URL, HISTORICAL_STOCK_URL
+from .common import STOCK_SUMMARY_QUOTE_URL, HISTORICAL_STOCK_URL, FLASH_QUOTE_URL
 
 
 def currentPrice(symbol):
@@ -62,27 +62,29 @@ def historicalStockQuote(symbol, timeframe="1m"):
 
 def flashQuotes(symbolList):
 
-    url = "https://www.nasdaq.com/aspx/flashquotes.aspx"
-
     headers = {
         'cookie': "userSymbolList="+'&'.join(symbolList)
     }
 
-    response = requests.request(
-        "GET", url,  headers=headers)
+    response = requests.request("GET", FLASH_QUOTE_URL,  headers=headers)
     # print(response.text)
     docTree = html.fromstring(response.content)
     table = docTree.xpath('(//div[@class="genTable"])[1]/table')[0]
 
     head = [th.strip() for th in table.xpath(
-        ".//th//a/text()|.//th/text()") if th.strip() != ""]
-    #print(head)
-    rows = table.xpath(".//tr")
+        './/th/a/text()[1]|.//th[@align]/text()')]
+
+    # print(table.xpath('.//tr[@class]')[0].attrib)
+
+    rows = table.xpath(".//tr[@class]")
+
+    # for r in rows:
+    #     print(r.attrib)
+
     dic = []
-    for r in rows[1:]:
+    for r in rows:
         datarow = {}
         for i, c in enumerate(r.xpath(".//td/a/text()|.//td/label/text()")):
-
             datarow[head[i]] = c
         dic.append(datarow)
     # print(dic)
