@@ -4,7 +4,7 @@ from lxml import html, etree
 from io import StringIO
 
 
-from .common import STOCK_SUMMARY_QUOTE_URL, HISTORICAL_STOCK_URL, FLASH_QUOTE_URL, INFO_QUOTE_URL
+from .common import STOCK_SUMMARY_QUOTE_URL, HISTORICAL_STOCK_URL, FLASH_QUOTE_URL, INFO_QUOTE_URL, COMPANY_LIST_URL
 
 
 def currentPrice(symbol):
@@ -83,3 +83,16 @@ def flashQuotes(symbolList):
     df[['Last Sale', 'Change', '% Change', 'Share Volume']] = df[[
         'Last Sale', 'Change', '% Change', 'Share Volume']].applymap(convert2num)
     return df
+
+
+def getCompanyList(exchange="nyse"):
+    '''
+    Arg: An exchange name. Possible values are ["nasdaq","nyse","amex"]. Default: nasdaq.
+    Return: Dataframe of list of companies
+    '''
+    exchange = exchange.lower()
+    if exchange not in ["nasdaq", "nyse", "amex"]:
+        return "Valid exchange names are nasdaq, nyse, and amex."
+    url = COMPANY_LIST_URL.format(exchange=exchange)
+    response = requests.get(url)
+    return pd.read_csv(StringIO(response.text), index_col=0).drop(["Summary Quote", "Unnamed: 8"], axis=1)
