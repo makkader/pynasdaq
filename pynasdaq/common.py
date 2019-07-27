@@ -2,6 +2,7 @@
 STOCK_SUMMARY_QUOTE_URL = "https://www.nasdaq.com/symbol/{symbol}"
 HISTORICAL_STOCK_URL = "https://www.nasdaq.com/symbol/{symbol}/historical"
 FLASH_QUOTE_URL = "https://www.nasdaq.com/aspx/flashquotes.aspx"
+INFO_QUOTE_URL = 'https://www.nasdaq.com/aspx/infoquotes.aspx'
 
 
 # Dividend

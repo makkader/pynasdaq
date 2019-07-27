@@ -4,16 +4,20 @@ from lxml import html, etree
 from io import StringIO
 
 
-from .common import STOCK_SUMMARY_QUOTE_URL, HISTORICAL_STOCK_URL, FLASH_QUOTE_URL
+from .common import STOCK_SUMMARY_QUOTE_URL, HISTORICAL_STOCK_URL, FLASH_QUOTE_URL, INFO_QUOTE_URL
 
 
 def currentPrice(symbol):
-    response = requests.get(STOCK_SUMMARY_QUOTE_URL.format(symbol=symbol))
-    docTree = html.fromstring(response.content)
 
-    curPrice = 0
-    curPrice = float(docTree.xpath(
-        '(//div[@id="qwidget_lastsale"])[1]/text()')[0].strip()[1:])
+    # response = requests.get(STOCK_SUMMARY_QUOTE_URL.format(symbol=symbol))
+    # docTree = html.fromstring(response.content)
+    # curPrice = float(docTree.xpath('(//div[@id="qwidget_lastsale"])[1]/text()')[0].strip()[1:])
+
+    response = requests.get(INFO_QUOTE_URL, params={"symbol": symbol})
+    docTree = html.fromstring(response.text)
+    priceStr = docTree.xpath('(//span[@class="lastsale_qn"])[1]/label[1]/text()')[0]
+    priceStr = priceStr.strip()[1:].replace(',', "")
+    curPrice = float(priceStr)
 
     data = {"Symbol": symbol, "CurrentPrice": curPrice}
 
