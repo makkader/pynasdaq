@@ -65,30 +65,26 @@ def flashQuotes(symbolList):
     headers = {
         'cookie': "userSymbolList="+'&'.join(symbolList)
     }
-
     response = requests.request("GET", FLASH_QUOTE_URL,  headers=headers)
-    # print(response.text)
     docTree = html.fromstring(response.content)
     table = docTree.xpath('(//div[@class="genTable"])[1]/table')[0]
 
-    head = [th.strip() for th in table.xpath(
-        './/th/a/text()[1]|.//th[@align]/text()')]
-
-    # print(table.xpath('.//tr[@class]')[0].attrib)
+    head = [th.strip() for th in table.xpath('.//th/a/text()[1]|.//th[@align]/text()')]
+    head.insert(3, "ChangeDirection")
 
     rows = table.xpath(".//tr[@class]")
-
-    # for r in rows:
-    #     print(r.attrib)
-
     dic = []
     for r in rows:
         datarow = {}
-        for i, c in enumerate(r.xpath(".//td/a/text()|.//td/label/text()")):
-            datarow[head[i]] = c
+        for i, c in enumerate(r.xpath('./td//text()')):
+            datarow[head[i]] = c.strip()
         dic.append(datarow)
-    # print(dic)
+    df = pd.DataFrame(dic, columns=head)
 
-    df = pd.DataFrame(dic)
+    def convert2num(x):
+        x = x.replace('$', '').replace(',', '').replace('%', '')
+        return float(x)
 
+    df[['Last Sale', 'Change', '% Change', 'Share Volume']] = df[[
+        'Last Sale', 'Change', '% Change', 'Share Volume']].applymap(convert2num)
     return df
