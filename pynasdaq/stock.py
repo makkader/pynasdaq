@@ -85,7 +85,7 @@ def flashQuotes(symbolList):
     return df
 
 
-def getCompanyList(exchange="nyse"):
+def companyList(exchange="nyse"):
     '''
     Arg: An exchange name. Possible values are ["nasdaq","nyse","amex"]. Default: nasdaq.
     Return: Dataframe of list of companies
