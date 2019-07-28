@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='pynasdaq',
-      version='0.1.1',
+      version='0.2.0',
       description='Retrieve NASDAQ stock and dividend data',
       url='https://github.com/makkader/pynasdaq',
       author='Mak Kader',
