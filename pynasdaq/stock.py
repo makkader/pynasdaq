@@ -56,6 +56,9 @@ def historicalStockQuote(symbol, timeframe="1m"):
 
 
 def flashQuotes(symbolList):
+    '''
+    Args: a symbol list - number of symbols must be less than or equal 25
+    '''
 
     headers = {
         'cookie': "userSymbolList="+'&'.join(symbolList)
@@ -65,20 +68,28 @@ def flashQuotes(symbolList):
     table = docTree.xpath('(//div[@class="genTable"])[1]/table')[0]
 
     head = [th.strip() for th in table.xpath('.//th/a/text()[1]|.//th[@align]/text()')]
-    head.insert(3, "ChangeDirection")
 
     rows = table.xpath(".//tr[@class]")
     dic = []
     for r in rows:
         datarow = {}
-        for i, c in enumerate(r.xpath('./td//text()')):
-            datarow[head[i]] = c.strip()
+        for i, c in enumerate(r.xpath('./td')):
+            label = c.xpath("./label/text()|./a/text()")[0].strip()
+            datarow[head[i]] = "0" if label == "unch" else label
+
+            if i == 3:
+                changeDirection = c.xpath("./span/text()")
+                datarow['ChangeDirection'] = "unch" if len(changeDirection) == 0 else changeDirection[0].strip()
+
         dic.append(datarow)
-    df = pd.DataFrame(dic, columns=head)
+    df = pd.DataFrame(dic)
 
     def convert2num(x):
         x = x.replace('$', '').replace(',', '').replace('%', '')
-        return float(x)
+        try:
+            return float(x)
+        except ValueError:
+            return float('nan')
 
     df[['Last Sale', 'Change', '% Change', 'Share Volume']] = df[[
         'Last Sale', 'Change', '% Change', 'Share Volume']].applymap(convert2num)
