@@ -7,7 +7,7 @@ with open(path.join(this_directory, 'readme.md'), encoding='utf-8') as f:
 
 
 setup(name='pynasdaq',
-      version='0.2.1',
+      version='0.3.1',
       description='Retrieve NASDAQ stock and dividend data',
       long_description=long_description,
       long_description_content_type='text/markdown',
