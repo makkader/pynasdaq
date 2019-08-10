@@ -14,4 +14,4 @@ Check usages in https://nbviewer.jupyter.org/github/makkader/pynasdaq/blob/maste
 
 # Require
 
-- Python3
+- Python3 (did not test python2)
