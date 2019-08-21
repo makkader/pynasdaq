@@ -1,13 +1,12 @@
 from setuptools import setup
 from os import path
 
-this_directory = path.abspath(path.dirname(__file__))
-with open(path.join(this_directory, 'readme.md'), encoding='utf-8') as f:
-    long_description = f.read()
+
+long_description = "Check usages in https://nbviewer.jupyter.org/github/makkader/pynasdaq/blob/master/usages.ipynb"
 
 
 setup(name='pynasdaq',
-      version='0.3.1',
+      version='0.3.2',
       description='Retrieve NASDAQ stock and dividend data',
       long_description=long_description,
       long_description_content_type='text/markdown',
