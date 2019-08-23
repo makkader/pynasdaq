@@ -12,11 +12,13 @@ def dividendCalendar(date=""):
     Args:
         date (string): in YYYY-Mmm-DD (e.g., 2019-Jan-01)
 
-    returns: DataFrame
+    returns: DataFrame or None
     '''
     response = requests.get(DIVIDEND_CALENDAR_URL, params={'date': date})
     docTree = html.fromstring(response.content)
     table = docTree.xpath('//table[@id="Table1"]')
+    if len(table) == 0:
+        return None
     df = pd.read_html(etree.tostring(table[0]))
 
     return df[0]

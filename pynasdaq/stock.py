@@ -96,6 +96,14 @@ def flashQuotes(symbolList):
     return df
 
 
+def batchFlashQuotes(symbolList):
+    qlist = []
+    for i in range(0, len(symbolList), 25):
+        qlist.append(flashQuotes(symbolList[i:i+25]))
+    df = pd.concat(qlist).set_index("Symbol")
+    return df
+
+
 def companyList(exchange="nyse"):
     '''
     Arg: An exchange name. Possible values are ["nasdaq","nyse","amex"]. Default: nasdaq.
