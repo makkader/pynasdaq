@@ -42,6 +42,8 @@ def dividendHistory(symbol):
     docTree = html.fromstring(response.content)
     table = docTree.xpath(
         '//table[@id="quotes_content_left_dividendhistoryGrid"]')
+    if len(table) == 0:
+        return None
     df = pd.read_html(etree.tostring(table[0]))
 
     return df[0]
