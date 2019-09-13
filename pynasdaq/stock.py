@@ -4,24 +4,19 @@ from lxml import html, etree
 from io import StringIO
 
 
-from .common import STOCK_SUMMARY_QUOTE_URL, HISTORICAL_STOCK_URL, FLASH_QUOTE_URL, INFO_QUOTE_URL, COMPANY_LIST_URL
+from .common import STOCK_SUMMARY_QUOTE_URL, HISTORICAL_STOCK_URL, FLASH_QUOTE_URL, INFO_QUOTE_URL, COMPANY_LIST_URL, CHART_API_URL
 
 
 def currentPrice(symbol):
+    '''
+    Arg: A symbol
+    Returns: DataSeries
+    '''
 
-    # response = requests.get(STOCK_SUMMARY_QUOTE_URL.format(symbol=symbol))
-    # docTree = html.fromstring(response.content)
-    # curPrice = float(docTree.xpath('(//div[@id="qwidget_lastsale"])[1]/text()')[0].strip()[1:])
-
-    response = requests.get(INFO_QUOTE_URL, params={"symbol": symbol})
-    docTree = html.fromstring(response.text)
-    priceStr = docTree.xpath('(//span[@class="lastsale_qn"])[1]/label[1]/text()')[0]
-    priceStr = priceStr.strip()[1:].replace(',', "")
-    curPrice = float(priceStr)
-
-    data = {"Symbol": symbol, "CurrentPrice": curPrice}
-
-    return pd.DataFrame(data, index=[0])
+    response = requests.get(CHART_API_URL.format(symbol))
+    data = response.json()['data']
+    price = float(data['lastSalePrice'].replace(',', "").replace('$', ''))
+    return pd.Series({'symbol': data['symbol'], 'company': data['company'], 'lastSalePrice': price})
 
 
 def stockSummaryQuote(symbol):

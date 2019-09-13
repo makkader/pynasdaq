@@ -4,9 +4,10 @@ HISTORICAL_STOCK_URL = "https://www.nasdaq.com/symbol/{symbol}/historical"
 FLASH_QUOTE_URL = "https://www.nasdaq.com/aspx/flashquotes.aspx"
 INFO_QUOTE_URL = 'https://www.nasdaq.com/aspx/infoquotes.aspx'
 COMPANY_LIST_URL = "https://www.nasdaq.com/screening/companies-by-name.aspx?exchange={exchange}&render=download"
+CHART_API_URL = "https://api.nasdaq.com/api/quote/{}/chart?assetclass=stocks"
 
 
 # Dividend
-DIVIDEND_CALENDAR_URL = "https://www.nasdaq.com/dividend-stocks/dividend-calendar.aspx"
+DIVIDEND_CALENDAR_URL = "https://api.nasdaq.com/api/calendar/dividends"
 HIGH_YIELD_DIVIDEND_URL = "https://www.nasdaq.com/dividend-stocks/?render=download"
 DIVIDEND_HISTORY_URL = "https://www.nasdaq.com/symbol/{symbol}/dividend-history"

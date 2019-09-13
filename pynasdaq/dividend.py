@@ -10,18 +10,14 @@ from .common import DIVIDEND_CALENDAR_URL, HIGH_YIELD_DIVIDEND_URL, DIVIDEND_HIS
 def dividendCalendar(date=""):
     ''' Returns dividend calendar for NASDAQ.
     Args:
-        date (string): in YYYY-Mmm-DD (e.g., 2019-Jan-01)
+        date (string): in YYYY-MM-DD (e.g., 2019-09-01)
 
     returns: DataFrame or None
     '''
     response = requests.get(DIVIDEND_CALENDAR_URL, params={'date': date})
-    docTree = html.fromstring(response.content)
-    table = docTree.xpath('//table[@id="Table1"]')
-    if len(table) == 0:
-        return None
-    df = pd.read_html(etree.tostring(table[0]))
-
-    return df[0]
+    rows = response.json()['data']['calendar']['rows']
+    if rows is not None:
+        return pd.DataFrame.from_dict(rows)
 
 
 def highYieldDividendStocks():
