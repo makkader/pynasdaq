@@ -4,7 +4,7 @@ from lxml import html, etree
 from io import StringIO
 
 
-from .common import DIVIDEND_CALENDAR_URL, HIGH_YIELD_DIVIDEND_URL, DIVIDEND_HISTORY_URL
+from .common import DIVIDEND_CALENDAR_URL, HIGH_YIELD_DIVIDEND_URL, DIVIDEND_HISTORY_API
 
 
 def dividendCalendar(date=""):
@@ -32,14 +32,10 @@ def highYieldDividendStocks():
 
 def dividendHistory(symbol):
     '''
-    returns dividend history of a given symbol
+    returns: Dataframe or None for the dividend history of a given symbol 
     '''
-    response = requests.get(DIVIDEND_HISTORY_URL.format(symbol=symbol))
-    docTree = html.fromstring(response.content)
-    table = docTree.xpath(
-        '//table[@id="quotes_content_left_dividendhistoryGrid"]')
-    if len(table) == 0:
-        return None
-    df = pd.read_html(etree.tostring(table[0]))
+    response = requests.get(DIVIDEND_HISTORY_API.format(symbol=symbol))
 
-    return df[0]
+    rows = response.json()['data']['dividends']['rows']
+    if rows is not None:
+        return pd.DataFrame.from_dict(rows)

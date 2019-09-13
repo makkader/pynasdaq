@@ -4,7 +4,7 @@ from lxml import html, etree
 from io import StringIO
 
 
-from .common import STOCK_SUMMARY_QUOTE_URL, HISTORICAL_STOCK_URL, FLASH_QUOTE_URL, INFO_QUOTE_URL, COMPANY_LIST_URL, CHART_API_URL
+from .common import STOCK_SUMMARY_QUOTE_URL, HISTORICAL_STOCK_URL, FLASH_QUOTE_URL, INFO_QUOTE_URL, COMPANY_LIST_URL, CHART_API
 
 
 def currentPrice(symbol):
@@ -13,7 +13,7 @@ def currentPrice(symbol):
     Returns: DataSeries
     '''
 
-    response = requests.get(CHART_API_URL.format(symbol))
+    response = requests.get(CHART_API.format(symbol))
     data = response.json()['data']
     price = float(data['lastSalePrice'].replace(',', "").replace('$', ''))
     return pd.Series({'symbol': data['symbol'], 'company': data['company'], 'lastSalePrice': price})
