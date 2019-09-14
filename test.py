@@ -8,6 +8,7 @@ s = time.time()
 # print(nas.stockSummaryQuote("MSB"))
 # print(nas.currentPrice("FB"))
 # print(nas.historicalStockQuote("aapl", "5d"))
+
 print(nas.batchQuotes(["TSLA", "RELL", "AAPL"]))
 # print(nas.companyList("nyse"))
 # print(nas.getPressReleaseHeadlines("AAPL"))
