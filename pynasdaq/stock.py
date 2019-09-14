@@ -4,7 +4,7 @@ from lxml import html, etree
 from io import StringIO
 
 
-from .common import STOCK_SUMMARY_QUOTE_URL, HISTORICAL_STOCK_URL, FLASH_QUOTE_URL, INFO_QUOTE_URL, COMPANY_LIST_URL, CHART_API
+from .common import STOCK_SUMMARY_QUOTE_URL, HISTORICAL_STOCK_URL, BATCH_QUOTE_API, COMPANY_LIST_URL, CHART_API
 
 
 def currentPrice(symbol):
@@ -22,7 +22,7 @@ def currentPrice(symbol):
 def stockSummaryQuote(symbol):
     '''
     Arg: A symbol
-    Returns: DataFrame with summary quote. All field type string 
+    Returns: DataFrame with summary quote. All field type string
     '''
     response = requests.get(STOCK_SUMMARY_QUOTE_URL.format(symbol=symbol))
     docTree = html.fromstring(response.content)
@@ -50,52 +50,29 @@ def historicalStockQuote(symbol, timeframe="1m"):
     return pd.read_csv(StringIO(response.text), index_col=False)
 
 
-def flashQuotes(symbolList):
+def miniBatchQuotes(symbolList):
     '''
-    Args: a symbol list - number of symbols must be less than or equal 25
+    Args: a symbol list - number of symbols must be less than or equal 20
+    Return: df with string column type
     '''
+   # ?symbol=aapl|stocks&symbol=goog|stocks
 
-    headers = {
-        'cookie': "userSymbolList="+'&'.join(symbolList)
-    }
-    response = requests.request("GET", FLASH_QUOTE_URL,  headers=headers)
-    docTree = html.fromstring(response.content)
-    table = docTree.xpath('(//div[@class="genTable"])[1]/table')[0]
-
-    head = [th.strip() for th in table.xpath('.//th/a/text()[1]|.//th[@align]/text()')]
-
-    rows = table.xpath(".//tr[@class]")
-    dic = []
-    for r in rows:
-        datarow = {}
-        for i, c in enumerate(r.xpath('./td')):
-            label = c.xpath("./label/text()|./a/text()")[0].strip()
-            datarow[head[i]] = "0" if label == "unch" else label
-
-            if i == 3:
-                changeDirection = c.xpath("./span/text()")
-                datarow['ChangeDirection'] = "unch" if len(changeDirection) == 0 else changeDirection[0].strip()
-
-        dic.append(datarow)
-    df = pd.DataFrame(dic)
-
-    def convert2num(x):
-        x = x.replace('$', '').replace(',', '').replace('%', '')
-        try:
-            return float(x)
-        except ValueError:
-            return float('nan')
-
-    df[['Last Sale', 'Change', '% Change', 'Share Volume']] = df[[
-        'Last Sale', 'Change', '% Change', 'Share Volume']].applymap(convert2num)
+    url = BATCH_QUOTE_API+"?"+'&'.join(map(lambda s: "symbol={}|stocks".format(s), symbolList))
+    response = requests.request("GET", url)
+    data = response.json()['data']
+    df = pd.DataFrame.from_dict(data)
     return df
 
 
-def batchFlashQuotes(symbolList):
+def batchQuotes(symbolList):
+    '''
+    Args: a symbol list - number of symbols
+    Return: df with string column type
+    '''
     qlist = []
-    for i in range(0, len(symbolList), 25):
-        qlist.append(flashQuotes(symbolList[i:i+25]))
-    df = pd.concat(qlist).set_index("Symbol")
+    for i in range(0, len(symbolList), 20):
+        qlist.append(miniBatchQuotes(symbolList[i:i+20]))
+    df = pd.concat(qlist).set_index("symbol")
     return df
 
 

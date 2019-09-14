@@ -1,4 +1,3 @@
-from .common import FLASH_QUOTE_URL
 import pandas as pd
 import requests
 from lxml import html, etree
