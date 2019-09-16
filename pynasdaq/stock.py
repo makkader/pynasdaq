@@ -4,7 +4,7 @@ from lxml import html, etree
 from io import StringIO
 
 
-from .common import STOCK_SUMMARY_QUOTE_URL, HISTORICAL_STOCK_URL, BATCH_QUOTE_API, COMPANY_LIST_URL, CHART_API
+from .common import INFO_API, BATCH_QUOTE_API, COMPANY_LIST_URL, CHART_API
 
 
 def currentPrice(symbol):
@@ -24,30 +24,21 @@ def stockSummaryQuote(symbol):
     Arg: A symbol
     Returns: DataFrame with summary quote. All field type string
     '''
-    response = requests.get(STOCK_SUMMARY_QUOTE_URL.format(symbol=symbol))
-    docTree = html.fromstring(response.content)
-
-    curPrice = docTree.xpath('(//div[@id="qwidget_lastsale"])[1]/text()')[0].strip()
-
-    tableRows = docTree.xpath('(.//div[@class="row overview-results relativeP"])[1]//div[@class="table-row"]')
-
-    data = {"Symbol": symbol, "CurrentPrice": curPrice}
-    for row in tableRows:
-        cells = row.xpath('./div[@class="table-cell"]')
-        key = cells[0].xpath('./b/text()')[0].strip()
-        val = cells[1].text.strip()
-        data[key] = val
-
-    return pd.DataFrame(data, index=[0])
+    response = requests.get(INFO_API.format(symbol))
+    data = response.json()['data']
+    keystats = data['keyStats']
+    return pd.Series({'symbol': data['symbol'], 'company': data['companyName'], 'lastSalePrice': data['primaryData']['lastSalePrice'],
+                      'volume': keystats['Volume']['value'], "MarketCap": keystats['MarketCap']['value']})
 
 
-def historicalStockQuote(symbol, timeframe="1m"):
-    payload = "{timeframe}|true".format(timeframe=timeframe)
-    headers = {'Content-Type': "application/json"}
-    url = HISTORICAL_STOCK_URL.format(symbol=symbol.lower())
+def historicalStockQuote(symbol, fromdate, todate):
 
-    response = requests.post(url, data=payload, headers=headers)
-    return pd.read_csv(StringIO(response.text), index_col=False)
+    params = {'fromdate': fromdate, 'todate': todate}
+    response = requests.get(CHART_API.format(symbol), params=params)
+    data = response.json()['data']['chart']
+
+    df = pd.DataFrame.from_dict(map(lambda x: x['z'], data))
+    return df
 
 
 def miniBatchQuotes(symbolList):
