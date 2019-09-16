@@ -6,7 +6,7 @@ long_description = "Check usages in https://nbviewer.jupyter.org/github/makkader
 
 
 setup(name='pynasdaq',
-      version='0.3.2',
+      version='0.4.0',
       description='Retrieve NASDAQ stock and dividend data',
       long_description=long_description,
       long_description_content_type='text/markdown',
